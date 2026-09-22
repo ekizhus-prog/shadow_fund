@@ -1,0 +1,21 @@
+{
+  "name": "shadow-fund",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Evidence-backed multi-chain paper portfolio agent using Nansen observations.",
+  "type": "module",
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "scripts": {
+    "dev": "node server/index.js",
+    "start": "node server/index.js",
+    "worker": "node server/worker.js",
+    "db:migrate": "node scripts/migrate.js",
+    "doctor": "node scripts/doctor.js",
+    "typecheck": "node scripts/typecheck.js",
+    "test": "node --test",
+    "build": "node scripts/build.js",
+    "usage:export": "node scripts/usage-export.js"
+  }
+}

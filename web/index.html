@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Shadow Fund</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="/?new=1"><span class="brand-mark">S</span><span>Shadow Fund</span></a>
+      <div class="topbar-meta"><span class="paper-pill">PAPER ONLY</span><span id="mode-pill">Synthetic recorded mode</span></div>
+    </header>
+    <main class="shell">
+      <section class="hero">
+        <div>
+          <p class="eyebrow">Evidence-backed portfolio lab</p>
+          <h1>Watch the evidence.<br /><em>Trace every decision.</em></h1>
+          <p class="hero-copy">A bounded multi-chain wallet-behavior strategy with deterministic allocation, modeled costs, and an append-only paper journal.</p>
+        </div>
+        <div class="hero-note"><span class="pulse"></span><span>No deposits. No signing keys. No live orders.</span></div>
+      </section>
+
+      <section id="create-panel" class="panel create-panel">
+        <div class="panel-heading"><div><p class="eyebrow">01 / Start a fund</p><h2>Create your paper portfolio</h2></div><span class="step-label">Default: Balanced</span></div>
+        <form id="create-form" class="create-form">
+          <label>Virtual capital <span class="input-prefix">$</span><input id="cash-input" name="cash" value="100000" inputmode="decimal" /></label>
+          <label>Risk preset<select id="preset-input" name="preset"><option value="Balanced">Balanced · 25% cash floor</option><option value="Conservative">Conservative · 50% cash floor</option><option value="Risky">Risky · 0% cash floor</option></select></label>
+          <label>Chain scope<select id="chain-input" name="chain"><option value="multi">All supported chains</option><option value="ethereum">Ethereum</option><option value="base">Base</option><option value="solana">Solana</option><option value="arbitrum">Arbitrum</option></select></label>
+          <label class="range-field">Market-cap rank range<div class="range-readout"><span>From <b id="asset-min-value">1</b></span><span>to <b id="asset-max-value">50</b></span></div><div class="range-slider"><input id="asset-min-input" type="range" min="1" max="250" value="1" step="1" aria-label="Minimum market-cap rank" /><input id="asset-max-input" type="range" min="1" max="250" value="50" step="1" aria-label="Maximum market-cap rank" /></div><div class="range-ticks"><span>1</span><span>50</span><span>100</span><span>150</span><span>200</span><span>250</span></div></label>
+          <button class="primary" type="submit">Create fund <span>→</span></button>
+        </form>
+        <p class="form-footnote">Ethereum · Base · Solana · Arbitrum · demo mode runs every lane for up to 20 selected tokens · wallet profiler lanes use wallets returned by Buyer/Sold · up to 5 paper targets · stablecoins count as cash-like · all decisions remain virtual.</p>
+        <div class="what-it-creates"><strong>What this creates</strong><span>A policy-driven suggested portfolio target from the selected chain and market-cap universe. A 1–250 range analyzes all returned tokens in that range, then the policy selects at most five targets for the paper portfolio. The first evaluation records simulated paper fills; it never sends a real order.</span></div>
+      </section>
+
+      <section id="fund-panel" class="hidden">
+        <div class="fund-header"><div><p class="eyebrow">Active paper fund</p><h2 id="fund-title">Shadow Fund</h2><p id="fund-subtitle" class="muted"></p></div><div class="fund-actions"><span id="status-pill" class="status-pill">READY</span><button id="new-fund-button" class="tertiary">New paper fund</button><button id="evaluate-button" class="secondary">Run portfolio evaluation <span>↗</span></button></div></div>
+        <section class="panel explainer-panel"><div class="panel-heading"><div><p class="eyebrow">What happens next</p><h2>Evidence becomes a suggested allocation</h2></div><span class="count-label">Deterministic policy</span></div><div class="workflow"><div><b>1. Collect</b><span>Read the bounded wallet and quote bundle at one cutoff.</span></div><div><b>2. Validate</b><span>Reject incomplete windows, missing balances, stale quotes, and thin liquidity.</span></div><div><b>3. Score and target</b><span>Rank eligible sources, apply your preset, and keep cash for anything capped or unavailable.</span></div><div><b>4. Paper ledger</b><span>Record modeled fills, costs, marks, and the before/after explanation.</span></div></div><p class="explainer-foot">This button does not predict prices or trade a wallet. It evaluates the latest evidence and records the policy result as a paper decision.</p></section>
+        <div id="job-strip" class="job-strip hidden"><div class="job-track"><span id="job-progress"></span></div><div class="job-copy"><strong id="job-stage">Scheduled</strong><span id="job-message">Waiting for observation bundle</span></div></div>
+
+        <div class="metrics-grid">
+          <article class="metric-card metric-main"><span class="metric-label">Net asset value</span><strong id="nav-value">$0.00</strong><span id="return-value" class="metric-change">0.00% since inception</span></article>
+          <article class="metric-card"><span class="metric-label">Current cash</span><strong id="cash-value">$0.00</strong><span id="cycle-value" class="muted">Actual paper ledger · Cycle 0</span></article>
+          <article class="metric-card"><span class="metric-label">Data cutoff</span><strong id="cutoff-value">—</strong><span id="coverage-value" class="muted">No observation yet</span></article>
+          <article class="metric-card"><span class="metric-label">Policy</span><strong id="policy-value">Balanced</strong><span id="policy-version" class="muted">v1.3.1 deterministic</span></article>
+        </div>
+
+        <section class="panel allocation-panel"><div class="panel-heading"><div><p class="eyebrow">Suggested deployment</p><h2>Policy target</h2></div><span id="allocation-label" class="count-label">Run evaluation to calculate</span></div><div id="allocation-content" class="allocation-content"><div class="empty-state">The fund starts at 100% virtual cash. Run the evaluation to calculate which tokens, if any, receive a target weight.</div></div><div id="allocation-detail" class="allocation-detail hidden"></div></section>
+
+        <div class="content-grid">
+          <section class="panel portfolio-panel"><div class="panel-heading"><div><p class="eyebrow">02 / Portfolio state</p><h2>Current paper holdings</h2></div><span id="position-count" class="count-label">0 positions</span></div><div id="positions" class="positions"></div><div id="position-detail" class="position-detail hidden"></div></section>
+          <section class="panel journal-panel"><div class="panel-heading"><div><p class="eyebrow">03 / Decision journal</p><h2>Every change has a receipt</h2></div><span class="count-label">Append-only</span></div><div id="journal" class="journal"></div></section>
+        </div>
+        <section class="panel source-panel"><div class="panel-heading"><div><p class="eyebrow">Evidence lane</p><h2>What the fund actually knows</h2></div><span id="observation-badge" class="source-badge">Awaiting collection</span></div><div class="source-grid"><div><span class="metric-label">Observed evidence</span><p id="selection-copy">Three complete 30-day windows are required. A wallet must have positive realized PnL, at least 10 reported sales/outflows, at least 2 observed traded tokens, and a complete balance denominator.</p></div><div><span class="metric-label">Policy constraints</span><p id="constraint-copy">Your preset controls minimum cash, per-token caps, per-chain caps, and maximum turnover. Missing or stale data is retained as an unavailable reason; it is never turned into a made-up position.</p></div><div><span class="metric-label">Usage and truth status</span><p id="usage-copy">No collection has run yet. Synthetic mode uses recorded fixtures and zero provider credits; live mode is separate and requires verified provider access.</p></div></div><div id="data-lanes" class="data-lanes"></div></section>
+      </section>
+      <div id="toast" class="toast hidden"></div>
+    </main>
+    <footer><span>Shadow Fund · educational paper simulation</span><span>Observed scope: selectable Nansen chains · <a href="/?new=1">Create a new fund</a></span></footer>
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>

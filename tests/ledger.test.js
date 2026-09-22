@@ -1,0 +1,31 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import test from 'node:test';
+import { createDatabase, execute, id } from '../server/db/index.js';
+import { ensurePolicy, runEvaluation } from '../server/agent/evaluate.js';
+import { createFund, getFundSnapshot } from '../server/domain/ledger.js';
+
+test('evaluation is durable and a repeated input cannot double-spend the ledger', async () => {
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'shadow-fund-'));
+  const db = createDatabase(path.join(tempDir, 'test.sqlite'));
+  ensurePolicy(db);
+  const fundId = createFund(db, { initialCashCents: 10_000_000, preset: 'Balanced', policyVersion: 'v1.0.0' });
+  const jobId = id('job');
+  execute(db, `INSERT INTO jobs (id, fund_id, stage, status, progress, message, created_at, updated_at) VALUES (?, ?, 'SCHEDULED', 'QUEUED', 0, '', datetime('now'), datetime('now'))`, [jobId, fundId]);
+  const first = await runEvaluation(db, { fundId, jobId, dataMode: 'synthetic' });
+  assert.ok(['APPLIED', 'NO_CHANGE'].includes(first.status));
+  const afterFirst = getFundSnapshot(db, fundId);
+  const cashAfterFirst = afterFirst.portfolio.cashCents;
+  assert.equal(afterFirst.currentCycle, 1);
+  const secondJob = id('job');
+  execute(db, `INSERT INTO jobs (id, fund_id, stage, status, progress, message, created_at, updated_at) VALUES (?, ?, 'SCHEDULED', 'QUEUED', 0, '', datetime('now'), datetime('now'))`, [secondJob, fundId]);
+  await runEvaluation(db, { fundId, jobId: secondJob, dataMode: 'synthetic' });
+  const afterSecond = getFundSnapshot(db, fundId);
+  assert.equal(afterSecond.currentCycle, 2);
+  assert.notEqual(afterSecond.portfolio.cashCents, cashAfterFirst);
+  assert.equal(afterSecond.decisions.length, 2);
+  db.close();
+  fs.rmSync(tempDir, { recursive: true, force: true });
+});
